@@ -15,22 +15,22 @@ All four tools the agents use — reading logs, reading metrics, creating ticket
 
 ## Architecture
 
-```
-Incident alert
-      |
-      v
-Supervisor agent  (routes to worker agents)
-      |
-      +--------------+--------------+
-      v              v              v
-Triage agent   Investigator agent   Notifier agent
-                     |
-                     v
-              MCP server (exposes tools)
-                     |
-                     v
-         SQLite (logs, metrics, tickets)
-         Chroma (runbook embeddings for RAG)
+```mermaid
+flowchart TD
+    A[Incident alert] --> B[Supervisor agent<br/><i>routes to worker agents</i>]
+    B --> C[Triage agent<br/><i>classifies severity</i>]
+    B --> D[Investigator agent<br/><i>queries MCP tools</i>]
+    B --> E[Notifier agent<br/><i>writes summary</i>]
+    D --> F[MCP server<br/><i>exposes tools to agents</i>]
+    F --> G[(Data & knowledge base<br/><i>SQLite + Chroma vectors</i>)]
+
+    style A fill:#e8e8ea,stroke:#888
+    style B fill:#e6d9f7,stroke:#8b5fbf
+    style C fill:#e6d9f7,stroke:#8b5fbf
+    style D fill:#e6d9f7,stroke:#8b5fbf
+    style E fill:#e6d9f7,stroke:#8b5fbf
+    style F fill:#f9d7cd,stroke:#c96a4b
+    style G fill:#e8e8ea,stroke:#888
 ```
 
 The Investigator is the only agent that calls all four tools; Triage and Notifier are deliberately scoped narrower. Keeping agent responsibilities explicit (via prompt boundaries) turned out to matter more than expected — an early version had the Investigator creating duplicate tickets because its prompt didn't explicitly rule that out.
