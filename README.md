@@ -24,13 +24,13 @@ flowchart TD
     D --> F[MCP server<br/><i>exposes tools to agents</i>]
     F --> G[(Data & knowledge base<br/><i>SQLite + Chroma vectors</i>)]
 
-    style A fill:#e8e8ea,stroke:#888
-    style B fill:#e6d9f7,stroke:#8b5fbf
-    style C fill:#e6d9f7,stroke:#8b5fbf
-    style D fill:#e6d9f7,stroke:#8b5fbf
-    style E fill:#e6d9f7,stroke:#8b5fbf
-    style F fill:#f9d7cd,stroke:#c96a4b
-    style G fill:#e8e8ea,stroke:#888
+    style A fill:#e8e8ea,stroke:#888,color:#1a1a1a
+    style B fill:#e6d9f7,stroke:#8b5fbf,color:#1a1a1a
+    style C fill:#e6d9f7,stroke:#8b5fbf,color:#1a1a1a
+    style D fill:#e6d9f7,stroke:#8b5fbf,color:#1a1a1a
+    style E fill:#e6d9f7,stroke:#8b5fbf,color:#1a1a1a
+    style F fill:#f9d7cd,stroke:#c96a4b,color:#1a1a1a
+    style G fill:#e8e8ea,stroke:#888,color:#1a1a1a
 ```
 
 The Investigator is the only agent that calls all four tools; Triage and Notifier are deliberately scoped narrower. Keeping agent responsibilities explicit (via prompt boundaries) turned out to matter more than expected — an early version had the Investigator creating duplicate tickets because its prompt didn't explicitly rule that out.
