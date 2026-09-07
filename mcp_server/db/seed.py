@@ -37,6 +37,17 @@ def create_tables(conn):
         )
     """)
 
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS traces (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            run_id TEXT NOT NULL,
+            timestamp TEXT NOT NULL,
+            agent_name TEXT NOT NULL,
+            event_type TEXT NOT NULL,
+            details TEXT NOT NULL
+        )
+    """)
+
 
 def seed_logs(conn):
     fake_logs = [
@@ -47,6 +58,8 @@ def seed_logs(conn):
         ("auth", "2026-08-15 22:01:15", "Rate limit exceeded for login endpoint", "warning"),
         ("inventory", "2026-08-14 03:45:00", "Database connection pool exhausted", "critical"),
         ("inventory", "2026-08-14 03:46:12", "Failed to sync stock levels", "error"),
+        ("notifications", "2026-08-18 10:05:12", "Deploy completed for notifications service", "info"),
+        ("notifications", "2026-08-18 10:05:30", "Elevated response time observed post-deploy", "warning"),
     ]
 
     conn.executemany(
@@ -64,6 +77,9 @@ def seed_metrics(conn):
         ("auth", "2026-08-16 09:12:00", 25.4, 3.5, 140),
         ("inventory", "2026-08-14 03:44:00", 88.9, 5.6, 310),
         ("inventory", "2026-08-14 03:46:00", 95.2, 18.9, 780),
+        ("notifications", "2026-08-18 10:00:00", 40.1, 0.5, 110),
+        ("notifications", "2026-08-18 10:05:00", 58.3, 3.2, 480),
+        ("notifications", "2026-08-18 10:10:00", 42.0, 0.9, 130),
     ]
 
     conn.executemany(
