@@ -100,6 +100,25 @@ def search_runbooks(query: str) -> str:
 
     return "\n\n".join(output)
 
+@mcp.tool()
+def get_execution_trace(run_id: str) -> str:
+    """Get the full execution trace for a given run, showing every agent action and tool call in order."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT timestamp, agent_name, event_type, details FROM traces WHERE run_id = ? ORDER BY id ASC",
+        (run_id,),
+    )
+    rows = cursor.fetchall()
+    conn.close()
+
+    if not rows:
+        return f"No trace found for run_id '{run_id}'."
+
+    lines = [f"[{ts}] {agent} — {etype}: {details}" for ts, agent, etype, details in rows]
+    return f"Execution trace for run '{run_id}' ({len(rows)} events):\n" + "\n".join(lines)
+
 
 
 if __name__ == "__main__":

@@ -30,10 +30,9 @@ Only investigate and summarize.
 """
 
 
-async def run_investigator(client, session, incident_description, triage_result):
+async def run_investigator(client, session, incident_description, triage_result, run_id):
     prompt = build_investigator_prompt(incident_description, triage_result)
-    #return await run_agent(client, session, "gemini-3.6-flash", prompt)
-    return await run_agent(client, session, "gemini-flash-lite-latest", prompt)
+    return await run_agent(client, session, "gemini-flash-lite-latest", prompt, run_id, "investigator")
 
 
 async def main():
@@ -42,7 +41,7 @@ async def main():
         async with ClientSession(read, write) as session:
             await session.initialize()
             fake_triage = '{"service": "checkout", "severity": "critical", "reasoning": "test run"}'
-            result = await run_investigator(client, session, "There's a reported issue with the checkout service.", fake_triage)
+            result = await run_investigator(client, session, "There's a reported issue with the checkout service.", fake_triage, "test-run")
             print(result)
 
 

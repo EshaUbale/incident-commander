@@ -21,7 +21,16 @@ def build_triage_prompt(incident_description):
 
 Quickly check current metrics for the relevant service to gauge severity.
 Do not investigate deeply or check logs or runbooks — that is a different agent's job.
-Just get a quick read on severity.
+
+Use these thresholds based on the metrics you retrieve, not on how the incident
+was described to you. Base your severity purely on the numbers:
+- critical: error rate above 15%, OR latency above 1500ms, OR CPU above 90%
+- high: error rate 5-15%, OR latency 500-1500ms, OR CPU 75-90%
+- medium: error rate 1-5%, OR latency 200-500ms, OR CPU 50-75%
+- low: below all of the above
+
+Two incidents with the same underlying metrics should always get the same
+severity, regardless of how the incident was worded.
 
 Respond with ONLY a JSON object, no markdown formatting, no extra text,
 in exactly this format:
@@ -29,24 +38,22 @@ in exactly this format:
 {{
   "service": "the service name",
   "severity": "critical, high, medium, or low",
-  "reasoning": "one sentence explaining why"
+  "reasoning": "one sentence explaining why, citing the specific metric that drove the decision"
 }}
 """
 
 
-async def run_triage(client, session, incident_description):
+async def run_triage(client, session, incident_description, run_id):
     prompt = build_triage_prompt(incident_description)
-    # return await run_agent(client, session, "gemini-3.6-flash", prompt)
-    return await run_agent(client, session, "gemini-flash-lite-latest", prompt)  
+    return await run_agent(client, session, "gemini-flash-lite-latest", prompt, run_id, "triage")
 
 
-# Lets you still test this agent alone: python3 agents/triage.py
 async def main():
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
-            result = await run_triage(client, session, "There's a reported issue with the checkout service.")
+            result = await run_triage(client, session, "There's a reported issue with the checkout service.", "test-run")
             print(result)
 
 

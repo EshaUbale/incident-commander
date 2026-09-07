@@ -34,10 +34,9 @@ Do two things, in order:
 """
 
 
-async def run_notifier(client, session, triage_result, investigation_summary):
+async def run_notifier(client, session, triage_result, investigation_summary, run_id):
     prompt = build_notifier_prompt(triage_result, investigation_summary)
-    # return await run_agent(client, session, "gemini-3.6-flash", prompt)
-    return await run_agent(client, session, "gemini-flash-lite-latest", prompt)
+    return await run_agent(client, session, "gemini-flash-lite-latest", prompt, run_id, "notifier")
 
 
 async def main():
@@ -47,7 +46,7 @@ async def main():
             await session.initialize()
             fake_triage = '{"service": "checkout", "severity": "critical", "reasoning": "test run"}'
             fake_summary = "Test investigation summary for standalone run."
-            result = await run_notifier(client, session, fake_triage, fake_summary)
+            result = await run_notifier(client, session, fake_triage, fake_summary, "test-run")
             print(result)
 
 
